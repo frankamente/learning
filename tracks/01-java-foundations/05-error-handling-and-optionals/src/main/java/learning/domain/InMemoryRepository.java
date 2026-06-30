@@ -2,9 +2,9 @@ package learning.domain;
 
 import learning.domain.exception.DuplicateKeyException;
 import learning.domain.exception.EntityNotFoundException;
+import learning.domain.result.Failure;
 import learning.domain.result.Result;
 import learning.domain.result.Success;
-import learning.domain.result.Failure;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,7 +24,10 @@ public class InMemoryRepository<T extends Entity<ID>, ID> {
     }
 
     public void saveStrict(T entity) throws DuplicateKeyException {
-        // TODO: Throw DuplicateKeyException if key already exists, otherwise save normally
+        if (findById(entity.id()).isPresent()) {
+            throw new DuplicateKeyException("Error saving entity: " + entity);
+        }
+        this.save(entity);
     }
 
     public Optional<T> findById(ID id) {
@@ -32,13 +35,16 @@ public class InMemoryRepository<T extends Entity<ID>, ID> {
     }
 
     public T getOrThrow(ID id) throws EntityNotFoundException {
-        // TODO: Retrieve entity by ID or throw EntityNotFoundException with descriptive message
-        return null;
+        return findById(id).orElseThrow(() -> new EntityNotFoundException("unknown entity with id: " + id));
     }
 
     public Result<T> trySave(T entity) {
-        // TODO: Try to save strictly, returning Success<T> or Failure<T>
-        return null;
+        try {
+            saveStrict(entity);
+            return new Success<>(entity);
+        } catch (DuplicateKeyException e) {
+            return new Failure<>("error saving entity: " + entity, e);
+        }
     }
 
     public List<T> findAll() {
