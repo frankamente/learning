@@ -111,3 +111,50 @@ public record Money(BigDecimal amount, String currency) {
   }
   ```
 
+---
+
+## 6. Domain Exceptions, Optional Pipelines & Result Pattern
+
+### Key Concept: Custom Domain Exceptions
+* Instead of throwing generic exceptions (like `IllegalArgumentException`), model domain failures explicitly using custom unchecked exceptions:
+  * `EntityNotFoundException` represents a query finding nothing.
+  * `DuplicateKeyException` represents a state violation on strict insertion.
+
+### Key Concept: Optional Pipelines (Functional Style)
+* Avoid using manual `if (opt.isPresent())` block checks. Instead, chain operations using monadic methods:
+  * `.orElseThrow()`: Cleanly resolves a value or throws an exception.
+  * `.map()` / `.flatMap()`: Transforms a present value or propagates an empty `Optional`.
+  ```java
+  // Clean Optional pipeline
+  return repository.findById(productId)
+          .map(product -> discountService.applyDiscount(product.price(), policy));
+  ```
+
+### Key Concept: The Result Type Pattern
+* In functional programming, expected business errors (like duplicate records) are often represented as **data** rather than using JVM exception throwing (which is expensive and represents exceptional, unexpected failures).
+* We model this in Java using a `sealed interface Result<T>` permitting `Success<T>` and `Failure<T>`:
+  ```java
+  public sealed interface Result<T> permits Success, Failure {}
+  
+  public record Success<T>(T value) implements Result<T> {}
+  public record Failure<T>(String errorMessage, Throwable cause) implements Result<T> {}
+  ```
+* In clients, we process the result cleanly using a `switch` expression:
+  ```java
+  return switch (result) {
+      case Success<Product> s -> ...;
+      case Failure<Product> f -> ...;
+  };
+  ```
+
+### Key Concept: Unnamed Variables (Java 22+)
+* Java 22 standardized the use of the underscore `_` to denote unused variables. This is particularly useful in lambda expressions where a parameter must be declared by the API but is not needed:
+  ```java
+  // Using '_' for unused lambda parameter
+  optionalProduct.ifPresentOrElse(
+      (_) -> { throw new DuplicateKeyException("Already exists"); },
+      () -> save(product)
+  );
+  ```
+
+
