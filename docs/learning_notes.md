@@ -192,5 +192,31 @@ public record Money(BigDecimal amount, String currency) {
   ```
 * For concurrent operations that do not require mutual exclusion, do not lock on a shared instance.
 
+---
+
+## 8. Thread Safety: Why Do We Use Locks? (Safety vs. Speed)
+
+### Key Concept: Locks are for Safety, not Speed
+* **Locks NEVER make code faster**. In fact, they introduce overhead and serialization (making threads wait in line). If we could write code without locks, it would run at maximum speed.
+* We use locks for **Thread Safety (Correctness)**: protecting **shared mutable state** (variables that are read/written concurrently by multiple threads) from corruption or race conditions.
+
+### The Bank Account Analogy (Race Condition)
+Suppose a bank account has a balance of **$100**. Two clients concurrently try to withdraw **$80** at the exact same millisecond:
+1. **Thread A (ATM 1)**: Reads balance ($100). Thinks: "Sufficient funds, proceed!"
+2. **Thread B (ATM 2)**: Reads balance ($100) concurrently. Thinks: "Sufficient funds, proceed!"
+3. **Thread A**: Subtracts $80. New balance = $20. Disburses cash.
+4. **Thread B**: Subtracts $80. New balance = -$60 (Overdrawn). Disburses cash.
+* Without synchronization, the bank loses $60 because two threads operated simultaneously.
+
+### The Solution: Locking for Mutual Exclusion
+* By wrapping the withdrawal logic in a lock (e.g. `ReentrantLock` or `synchronized`), we force Thread B to wait outside until Thread A finishes.
+* Thread B will then read the updated balance of $20 and reject the withdrawal. The code runs **slower** (Thread B had to wait), but it is **correct**.
+
+### How Virtual Threads Help When Blocking on Locks
+When we *must* lock (or when we block waiting for a database response/network call):
+* **With Platform Threads**: The heavy OS thread remains blocked doing nothing. We waste system memory (~1MB) and CPU cycles because that thread cannot do any other work.
+* **With Virtual Threads**: When a virtual thread blocks waiting to acquire a lock or during a sleep/network call, it **unmounts** from its platform carrier thread. The JVM scheduler immediately repurposes that carrier thread to run another virtual thread. Once the lock is released or the waiting is over, the virtual thread is remounted onto an available carrier thread to resume execution.
+
+
 
 
