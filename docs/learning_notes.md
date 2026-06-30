@@ -212,10 +212,33 @@ Suppose a bank account has a balance of **$100**. Two clients concurrently try t
 * By wrapping the withdrawal logic in a lock (e.g. `ReentrantLock` or `synchronized`), we force Thread B to wait outside until Thread A finishes.
 * Thread B will then read the updated balance of $20 and reject the withdrawal. The code runs **slower** (Thread B had to wait), but it is **correct**.
 
-### How Virtual Threads Help When Blocking on Locks
-When we *must* lock (or when we block waiting for a database response/network call):
-* **With Platform Threads**: The heavy OS thread remains blocked doing nothing. We waste system memory (~1MB) and CPU cycles because that thread cannot do any other work.
 * **With Virtual Threads**: When a virtual thread blocks waiting to acquire a lock or during a sleep/network call, it **unmounts** from its platform carrier thread. The JVM scheduler immediately repurposes that carrier thread to run another virtual thread. Once the lock is released or the waiting is over, the virtual thread is remounted onto an available carrier thread to resume execution.
+
+---
+
+## 9. Testing: Test Data Builders and Behavior-Focused Assertions
+
+### Key Concept: Test Clutter
+* Setting up test fixtures via standard constructors (e.g. `new Order("o1", new Customer("c1", "Name", ...))`) results in verbose setup blocks.
+* If a domain constructor changes later, dozens of tests break, making the test suite fragile.
+
+### Key Concept: Test Data Builder Pattern
+* Provides a fluent API to build domain models with sensible default values, only overriding what is relevant to the test case:
+  ```java
+  // Clear, readable setup
+  Order order = anOrder()
+      .withCustomer(aCustomer().withEmail("invalid-email"))
+      .with(anOrderItem().withPrice(new Money(BigDecimal.valueOf(120), "EUR")))
+      .build();
+  ```
+* **Chaining Builders**: Having a builder accept other builder instances (e.g., `OrderBuilder.withCustomer(CustomerBuilder)`) enhances expression and avoids intermediate `.build()` calls in the test itself.
+
+### Key Concept: Behavior-Focused Test Naming & Assertions
+* **Naming**: Name tests based on the expected behavior rather than the class name or simple action (e.g., `shouldApplyTenPercentDiscountWhenOrderTotalIsOverOneHundred` vs. `testOrderTotal`).
+* **AssertJ Fluent API**: Use expressive, human-readable assertion methods instead of raw boolean checks:
+  * `assertThat(result.amount()).isEqualByComparingTo(expected)` (proper BigDecimal handling).
+  * `assertThatThrownBy(() -> action()).isInstanceOf(IllegalStateException.class).hasMessageContaining("empty")`.
+
 
 
 
