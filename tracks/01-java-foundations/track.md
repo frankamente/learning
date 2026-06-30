@@ -35,4 +35,5 @@ Become fluent enough in Java to reason about backend code without hiding behind 
 - [x] **Issue 002**: Implement value objects with invariants and validation tests. See [issue-002_value_objects_invariants.md](issues/issue-002_value_objects_invariants.md)
 - [x] **Issue 003**: Packages, Encapsulation, and Sealed Types. See [issue-003_packages_and_sealed_types.md](issues/issue-003_packages_and_sealed_types.md)
 - [x] **Issue 004**: Generics, Custom Repository, and Collections. See [issue-004_generics_and_collections.md](issues/issue-004_generics_and_collections.md)
-- [ ] **Issue 005**: Domain Exceptions, Result Types, and Optional Pipelines. See [issue-005_error_handling_and_optionals.md](issues/issue-005_error_handling_and_optionals.md)
+- [x] **Issue 005**: Domain Exceptions, Result Types, and Optional Pipelines. See [issue-005_error_handling_and_optionals.md](issues/issue-005_error_handling_and_optionals.md)
+- [ ] **Issue 006**: Concurrency, Virtual Threads, and Thread Pinning. See [issue-006_concurrency_and_virtual_threads.md](issues/issue-006_concurrency_and_virtual_threads.md)
