@@ -4,21 +4,37 @@ import learning.Money;
 import java.math.BigDecimal;
 
 public final class OrderItemBuilder {
-    // TODO: Define fields with default values:
-    // - productName = "Keyboard"
-    // - price = new Money(BigDecimal.valueOf(20), "EUR")
-    // - quantity = 1
 
-    private OrderItemBuilder() {}
+    private String productName;
+    private Money price;
+    private int quantity;
+
+    private OrderItemBuilder() {
+        productName = "Keyboard";
+        price = new Money(BigDecimal.valueOf(20), "EUR");
+        quantity = 1;
+    }
 
     public static OrderItemBuilder anOrderItem() {
         return new OrderItemBuilder();
     }
 
-    // TODO: Write chainable withProductName, withPrice, and withQuantity methods.
+    public OrderItemBuilder withProductName(String productName) {
+        this.productName = productName;
+        return this;
+    }
+
+    public OrderItemBuilder withPrice(Money price) {
+        this.price = price;
+        return this;
+    }
+
+    public OrderItemBuilder withQuantity(int quantity) {
+        this.quantity = quantity;
+        return this;
+    }
 
     public OrderItem build() {
-        // TODO: Return a new OrderItem using the builder's fields
-        return null;
+        return new OrderItem(productName, price, quantity);
     }
 }

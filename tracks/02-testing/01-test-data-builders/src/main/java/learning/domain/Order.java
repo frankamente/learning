@@ -1,10 +1,12 @@
 package learning.domain;
 
 import learning.Money;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Order {
     private final String id;
@@ -13,8 +15,8 @@ public class Order {
     private OrderStatus status;
 
     public Order(String id, Customer customer) {
-        this.id = java.util.Objects.requireNonNull(id, "Order ID cannot be null");
-        this.customer = java.util.Objects.requireNonNull(customer, "Customer cannot be null");
+        this.id = Objects.requireNonNull(id, "Order ID cannot be null");
+        this.customer = Objects.requireNonNull(customer, "Customer cannot be null");
         this.status = OrderStatus.DRAFT;
     }
 
@@ -42,15 +44,27 @@ public class Order {
     }
 
     public Money total() {
-        // TODO: Sum all items' subtotals.
-        // If total price exceeds 100 EUR, apply a 10% discount.
-        return null;
+        if (items.isEmpty()) {
+            return new Money(BigDecimal.ZERO, "EUR");
+        }
+        Money total = new Money(BigDecimal.ZERO, items.getFirst().price().currency());
+        for (OrderItem item : items()) {
+            total = total.add(item.subtotal());
+        }
+
+        if (total.amount().compareTo(BigDecimal.valueOf(100)) > 0) {
+            total = total.multiply(new BigDecimal("0.90"));
+        }
+        return total;
     }
 
     public void complete() {
-        // TODO: Enforce invariants before completing:
-        // 1. Order cannot be completed if it contains no items.
-        // 2. Customer must have a valid email.
-        // If valid, change status to COMPLETED.
+        if (items().isEmpty()) {
+            throw new IllegalStateException("empty");
+        }
+        if (!customer().hasValidEmail()) {
+            throw new IllegalStateException("email");
+        }
+        this.status = OrderStatus.COMPLETED;
     }
 }

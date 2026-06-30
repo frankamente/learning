@@ -28,7 +28,8 @@ public record Money(BigDecimal amount, String currency) {
     }
 
     public Money multiply(BigDecimal factor) {
-        return new Money(this.amount.multiply(factor), this.currency);
+        BigDecimal roundedAmount = this.amount.multiply(factor).setScale(2, java.math.RoundingMode.HALF_UP);
+        return new Money(roundedAmount, this.currency);
     }
 
     public Money subtract(Money moneyToSubtract) {

@@ -35,6 +35,16 @@ class OrderTest {
     }
 
     @Test
+    void shouldReturnZeroEurTotalWhenOrderIsEmpty() {
+        Order order = anOrder().build();
+
+        Money total = order.total();
+
+        assertThat(total.amount()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(total.currency()).isEqualTo("EUR");
+    }
+
+    @Test
     void shouldFailToCompleteEmptyOrder() {
         Order order = anOrder().build();
 

@@ -6,9 +6,10 @@ import java.util.List;
 public final class OrderBuilder {
     private String id = "o1";
     private Customer customer = CustomerBuilder.aCustomer().build();
-    private List<OrderItem> items = new ArrayList<>();
+    private final List<OrderItem> items = new ArrayList<>();
 
-    private OrderBuilder() {}
+    private OrderBuilder() {
+    }
 
     public static OrderBuilder anOrder() {
         return new OrderBuilder();
@@ -24,15 +25,19 @@ public final class OrderBuilder {
         return this;
     }
 
-    // TODO: Write a withCustomer(CustomerBuilder customerBuilder) method for convenience
-    // This allows doing: anOrder().withCustomer(aCustomer().withName("Alice"))
+    public OrderBuilder withCustomer(CustomerBuilder customerBuilder) {
+        this.customer = customerBuilder.build();
+        return this;
+    }
 
-    // TODO: Write a method to add items to the order builder
-    // This allows doing: anOrder().with(anOrderItem().withPrice(10 EUR))
+    public OrderBuilder with(OrderItemBuilder orderItemBuilder) {
+        this.items.add(orderItemBuilder.build());
+        return this;
+    }
 
     public Order build() {
         Order order = new Order(id, customer);
-        // TODO: Add all items from the list to the order object
+        items.forEach(order::addItem);
         return order;
     }
 }
