@@ -3,6 +3,8 @@ package learning.infrastructure;
 import learning.domain.Money;
 import learning.domain.Product;
 import learning.domain.ProductRepository;
+
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,21 +22,60 @@ public class JdbcProductRepository implements ProductRepository {
 
     @Override
     public void save(Product product) {
-        // TODO: Insert product using raw JDBC:
-        // INSERT INTO products (id, name, price, currency) VALUES (?, ?, ?, ?)
+        try {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO products (id, name, price, currency) VALUES (?, ?, ?, ?)")) {
+
+                preparedStatement.setString(1, product.id());
+                preparedStatement.setString(2, product.name());
+                preparedStatement.setBigDecimal(3, product.price().amount());
+                preparedStatement.setString(4, product.price().currency());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Optional<Product> findById(String id) {
-        // TODO: Query product by id using raw JDBC:
-        // SELECT id, name, price, currency FROM products WHERE id = ?
-        return Optional.empty();
+        try {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, price, currency FROM products WHERE id = ?")) {
+                preparedStatement.setString(1, id);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        String newId = resultSet.getString("id");
+                        String name = resultSet.getString("name");
+                        BigDecimal price = resultSet.getBigDecimal("price");
+                        String currency = resultSet.getString("currency");
+                        return Optional.of(new Product(newId, name, new Money(price, currency)));
+                    }
+                    return Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<Product> findAll() {
-        // TODO: Query all products using raw JDBC:
-        // SELECT id, name, price, currency FROM products
-        return List.of();
+        try {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, price, currency FROM products")) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    List<Product> result = new ArrayList<>();
+                    while (resultSet.next()) {
+                        String newId = resultSet.getString("id");
+                        String name = resultSet.getString("name");
+                        BigDecimal price = resultSet.getBigDecimal("price");
+                        String currency = resultSet.getString("currency");
+                        Product product = new Product(newId, name, new Money(price, currency));
+                        result.add(product);
+                    }
+                    return result;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
