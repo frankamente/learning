@@ -239,6 +239,18 @@ Suppose a bank account has a balance of **$100**. Two clients concurrently try t
   * `assertThat(result.amount()).isEqualByComparingTo(expected)` (proper BigDecimal handling).
   * `assertThatThrownBy(() -> action()).isInstanceOf(IllegalStateException.class).hasMessageContaining("empty")`.
 
+---
+
+## 10. JUnit 6 (Unified Platform & Engine)
+
+### Key Concept: Unified Versioning
+* In JUnit 5, components were split into different versions (JUnit Platform, Jupiter, Vintage), which often made dependency management complex.
+* **JUnit 6** (released in late 2025) consolidates all these packages under a **single unified version (6.x.x)**.
+* **Java Baseline**: JUnit 6 requires **Java 17 or higher** (fully compatible with our Java 25 workspace).
+* **Improved Parameterized Testing**: Migrated from `univocity-parsers` to `FastCSV` for CSV-driven tests.
+* **Coroutines Support**: Native integration with Kotlin `suspend` functions without needing extra coroutine libraries.
+
+
 
 
 
