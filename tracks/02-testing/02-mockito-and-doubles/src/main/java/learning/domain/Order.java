@@ -1,6 +1,6 @@
 package learning.domain;
 
-import learning.Money;
+import learning.domain.Money;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;

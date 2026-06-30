@@ -1,16 +1,24 @@
-package learning.domain;
+package learning.application;
 
+import learning.domain.Order;
+import learning.domain.PaymentGateway;
+import learning.domain.InventoryService;
+import learning.domain.OrderRepository;
+import learning.domain.PaymentResult;
+import learning.domain.OutOfStockException;
+import learning.domain.FakeOrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.ArrayList;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static learning.domain.OrderBuilder.anOrder;
+import static learning.domain.OrderItemBuilder.anOrderItem;
+import static learning.domain.CustomerBuilder.aCustomer;
 
 @ExtendWith(MockitoExtension.class)
 class OrderProcessorTest {
@@ -59,5 +67,4 @@ class OrderProcessorTest {
         // - Run a successful payment scenario.
         // - Assert that the fake repository actually contains the saved order (no Mockito verification).
     }
-
 }

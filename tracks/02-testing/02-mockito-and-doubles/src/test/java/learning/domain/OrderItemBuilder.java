@@ -1,6 +1,6 @@
 package learning.domain;
 
-import learning.Money;
+import learning.domain.Money;
 import java.math.BigDecimal;
 
 public final class OrderItemBuilder {

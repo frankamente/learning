@@ -1,6 +1,6 @@
 package learning.domain;
 
-import learning.Money;
+import learning.domain.Money;
 import java.math.BigDecimal;
 
 public record OrderItem(String productName, Money price, int quantity) {

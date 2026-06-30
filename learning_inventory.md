@@ -99,6 +99,7 @@ Spring Boot, distributed systems, cloud, and operations matter, but they should 
   - Error handling.
   - Actuator.
   - Observability with Micrometer.
+  - Different frameworks (security, data, and all most used)
   - Configuration and test slices.
 * **Modern Spring Topics to Explicitly Learn**:
   - Spring Boot 4 migration and conventions.
@@ -147,6 +148,7 @@ Spring Boot, distributed systems, cloud, and operations matter, but they should 
   - Layered architecture.
   - Hexagonal architecture.
   - Ports and adapters.
+  - CQRS
   - Modular monoliths.
   - Domain modeling.
   - Use cases and application services.
@@ -164,13 +166,24 @@ Spring Boot, distributed systems, cloud, and operations matter, but they should 
   - Sagas and process managers.
   - Ordering and partitioning.
   - Consistency models & Failure modes.
+  - High concurrency
 
 ### 9. Operations and Cloud
 **Goal**: Understand how systems run, fail, recover, and evolve outside the IDE.
 * **Topics**:
   - Docker.
   - CI/CD.
+  - Terraform
   - Logs, metrics, traces, and dashboards.
+  - OpenTelemetry.
+  - Elasticsearch.
+  - Grafana.
+  - Prometheus.
+  - Monitoring assembling all with spring-boot
+  - Sleuth
+  - Tempo
+  - Zipkin.
+  - Jaeger.
   - AWS & Infrastructure as Code.
   - Kubernetes / OpenShift.
   - Runtime configuration & Deployment strategies.

@@ -1,4 +1,9 @@
-package learning.domain;
+package learning.application;
+
+import learning.domain.Order;
+import learning.domain.PaymentGateway;
+import learning.domain.InventoryService;
+import learning.domain.OrderRepository;
 
 public class OrderProcessor {
     private final PaymentGateway paymentGateway;
