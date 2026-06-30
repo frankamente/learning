@@ -250,6 +250,47 @@ Suppose a bank account has a balance of **$100**. Two clients concurrently try t
 * **Improved Parameterized Testing**: Migrated from `univocity-parsers` to `FastCSV` for CSV-driven tests.
 * **Coroutines Support**: Native integration with Kotlin `suspend` functions without needing extra coroutine libraries.
 
+---
+
+## 11. BDDMockito and Switch Expressions
+
+### Key Concept: BDDMockito (Given / When / Then)
+* Standard Mockito uses `when(mock.call()).thenReturn(val)` and `verify(mock).call()`. This mixes vocabulary and breaks the BDD flow.
+* **BDDMockito** (`org.mockito.BDDMockito.*`) provides aliases to align with the **Given / When / Then** structure:
+  * **Given (Stubbing)**: `given(mock.call()).willReturn(val)` or `willThrow(exception).given(mock).reserve(...)`.
+  * **Then (Verification)**: `then(mock).should().call()` or `then(mock).shouldHaveNoInteractions()`.
+  ```java
+  // Given
+  given(paymentGateway.charge(order)).willReturn(PaymentResult.SUCCESS);
+
+  // When
+  boolean result = orderProcessor.process(order);
+
+  // Then
+  assertThat(result).isTrue();
+  then(orderRepository).should().save(order);
+  ```
+
+### Key Concept: Switch Expressions (Java 14+)
+* Standard `switch` statements can lead to bugs (missing `break`, leading to fall-through) and require fallback return statements outside the block.
+* **Switch Expressions** yield a value directly using the `yield` keyword or arrow syntax `->` and are compile-time checked for exhaustiveness (no `default` case is needed for enums/sealed types if all cases are covered):
+  ```java
+  return switch (charge) {
+      case SUCCESS -> {
+          order.complete();
+          orderRepository.save(order);
+          yield true;
+      }
+      case FAILURE -> {
+          inventoryService.release(order);
+          order.cancel();
+          orderRepository.save(order);
+          yield false;
+      }
+  };
+  ```
+
+
 
 
 
