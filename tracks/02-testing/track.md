@@ -23,4 +23,4 @@ Use tests as a design tool, not only as correctness checks.
 
 ## Active Issues
 - [x] **Issue 007**: Test Data Builders, assertions and clean domain test design. See [issue-007_test_data_builders_and_assertions.md](issues/issue-007_test_data_builders_and_assertions.md)
-- [ ] **Issue 008**: Mockito, Test Doubles, and BDD Mocking. See [issue-008_mockito_and_test_doubles.md](issues/issue-008_mockito_and_test_doubles.md)
+- [x] **Issue 008**: Mockito, Test Doubles, and BDD Mocking. See [issue-008_mockito_and_test_doubles.md](issues/issue-008_mockito_and_test_doubles.md)
