@@ -22,4 +22,4 @@ Use tests as a design tool, not only as correctness checks.
    - Spring Boot slice tests later (when starting Spring).
 
 ## Active Issues
-- [ ] **Issue 007**: Test Data Builders, assertions and clean domain test design. See [issue-007_test_data_builders_and_assertions.md](issues/issue-007_test_data_builders_and_assertions.md)
+- [x] **Issue 007**: Test Data Builders, assertions and clean domain test design. See [issue-007_test_data_builders_and_assertions.md](issues/issue-007_test_data_builders_and_assertions.md)
