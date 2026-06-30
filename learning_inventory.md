@@ -99,7 +99,14 @@ Spring Boot, distributed systems, cloud, and operations matter, but they should 
   - Error handling.
   - Actuator.
   - Observability with Micrometer.
-  - Different frameworks (security, data, and all most used)
+  - Spring Data, Spring Security, and other core framework integrations.
+  - Security, IAM & Authentication Methods:
+    * Spring Security architecture, filter chain, and security context.
+    * Identity Management (IAM) integrations: LDAP, Oracle Identity Manager (OIM), Oracle Access Manager (OAM).
+    * Social Login & Federated Authentication (OAuth2, OIDC with Google, GitHub, etc.).
+    * Multi-login configurations (supporting form login, LDAP, and Social/OAuth2 login concurrently in a single Spring Boot application).
+    * Modern IAM Servers: Keycloak and Auth0 integrations.
+    * Stateless authentication (JWT) vs. Session-based stateful authentication.
   - Configuration and test slices.
 * **Modern Spring Topics to Explicitly Learn**:
   - Spring Boot 4 migration and conventions.
