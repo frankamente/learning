@@ -6,12 +6,24 @@ public class PinningDemo {
     private final ReentrantLock lock = new ReentrantLock();
 
     public void executeSynchronizedTask() {
-        // TODO: Run a synchronized block that sleeps.
-        // If run within a Virtual Thread, this will cause Carrier Thread Pinning.
+        synchronized (new Object()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     public void executeLockTask() {
-        // TODO: Run a lock block using ReentrantLock that sleeps.
-        // ReentrantLock allows Virtual Threads to unmount from the carrier thread, avoiding pinning.
+        var localLock = new ReentrantLock();
+        localLock.lock();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            localLock.unlock();
+        }
     }
 }

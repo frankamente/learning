@@ -54,9 +54,9 @@ class ConcurrentTaskProcessorTest {
     }
 
     @Test
-    void shouldPinCarrierThreadsWhenUsingSynchronized() throws Exception {
+    void shouldNotPinCarrierThreadsWhenUsingSynchronizedInJava25() throws Exception {
         int parallelism = Runtime.getRuntime().availableProcessors();
-        int numberOfTasks = parallelism + 2; // Satura el pool de carriers
+        int numberOfTasks = parallelism + 2;
         var pinningDemo = new PinningDemo();
 
         List<Callable<Void>> tasks = new ArrayList<>();
@@ -73,11 +73,12 @@ class ConcurrentTaskProcessorTest {
         }
         long duration = System.currentTimeMillis() - start;
 
-        // Cada tarea sincronizada duerme 100ms.
-        // Dado que se pilla el Carrier, se encolan secuencialmente en batches del tamaño de parallelism.
-        // Se espera que tarde al menos 200ms (2 batches).
-        System.out.println("Synchronized (pinned) execution took: " + duration + " ms");
-        assertThat(duration).isGreaterThanOrEqualTo(180); // Permitimos pequeña holgura del planificador
+        // NOTA DE JAVA 25: A partir de Java 24 (JEP 491), los bloques 'synchronized'
+        // ya NO bloquean (pin) el hilo carrier en operaciones de sleep/IO. Los hilos virtuales
+        // se desmontan correctamente. Por lo tanto, esta prueba se ejecuta en paralelo en ~100ms
+        // en lugar de secuencialmente.
+        System.out.println("Synchronized (Java 25 - unpinned) execution took: " + duration + " ms");
+        assertThat(duration).isLessThan(180);
     }
 
     @Test
@@ -101,8 +102,7 @@ class ConcurrentTaskProcessorTest {
         long duration = System.currentTimeMillis() - start;
 
         // Cada tarea ReentrantLock duerme 100ms.
-        // Como no pilla el Carrier, se desmotan y ejecutan todos concurrentemente.
-        // Se espera que tarde alrededor de 100ms (menos de 180ms).
+        // Como no pilla el Carrier, se desmontan y ejecutan todos concurrentemente en ~100ms.
         System.out.println("ReentrantLock (unpinned) execution took: " + duration + " ms");
         assertThat(duration).isLessThan(180);
     }
