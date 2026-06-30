@@ -1,70 +1,83 @@
 package learning.application;
 
-import learning.domain.Order;
-import learning.domain.PaymentGateway;
-import learning.domain.InventoryService;
-import learning.domain.OrderRepository;
-import learning.domain.PaymentResult;
-import learning.domain.OutOfStockException;
-import learning.domain.FakeOrderRepository;
+import learning.domain.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+
 import static learning.domain.OrderBuilder.anOrder;
 import static learning.domain.OrderItemBuilder.anOrderItem;
-import static learning.domain.CustomerBuilder.aCustomer;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderProcessorTest {
 
-    // TODO: Declare mocks for dependencies:
-    // @Mock
-    // private PaymentGateway paymentGateway;
-    // ...
+    @Mock
+    private InventoryService inventoryService;
 
-    // TODO: Declare SUT:
-    // @InjectMocks
-    // private OrderProcessor orderProcessor;
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    @Mock
+    private OrderRepository orderRepository;
+
+    @InjectMocks
+    private OrderProcessor orderProcessor;
 
     @Test
     void shouldFailImmediatelyWhenInventoryIsOutOfStock() {
-        // TODO:
-        // - Stub inventoryService.reserve to throw OutOfStockException.
-        // - Assert that calling orderProcessor.process throws the exception.
-        // - Verify that paymentGateway was never called and orderRepository was never saved.
+        Order order = anOrder().build();
+        willThrow(OutOfStockException.class).given(inventoryService).reserve(order);
+
+        assertThatThrownBy(() -> orderProcessor.process(order))
+                .isInstanceOf(OutOfStockException.class);
+
+        then(paymentGateway).shouldHaveNoInteractions();
+        then(orderRepository).should(never()).save(any());
     }
 
     @Test
     void shouldCompleteAndSaveOrderWhenPaymentSucceeds() {
-        // TODO:
-        // - Stub paymentGateway to return PaymentResult.SUCCESS.
-        // - Assert that process returns true.
-        // - Verify that the order transitioned to COMPLETED.
-        // - Verify orderRepository.save was called.
+        Order order = anOrder().with(anOrderItem()).build();
+        given(paymentGateway.charge(order)).willReturn(PaymentResult.SUCCESS);
+
+        boolean result = orderProcessor.process(order);
+
+        assertThat(result).isTrue();
+        assertThat(order.status()).isEqualByComparingTo(OrderStatus.COMPLETED);
+        then(orderRepository).should().save(order);
     }
 
     @Test
     void shouldReleaseInventoryAndCancelOrderWhenPaymentFails() {
-        // TODO:
-        // - Stub paymentGateway to return PaymentResult.FAILURE.
-        // - Assert that process returns false.
-        // - Verify inventoryService.release was called.
-        // - Verify that the order transitioned to CANCELLED.
-        // - Verify orderRepository.save was called.
+        Order order = anOrder().with(anOrderItem()).build();
+        given(paymentGateway.charge(order)).willReturn(PaymentResult.FAILURE);
+
+        boolean result = orderProcessor.process(order);
+
+        assertThat(result).isFalse();
+        assertThat(order.status()).isEqualByComparingTo(OrderStatus.CANCELLED);
+        then(orderRepository).should().save(order);
+        then(inventoryService).should().release(order);
     }
 
     @Test
     void shouldProcessOrderSuccessfullyUsingFakeRepository() {
-        // TODO:
-        // - Create an instance of FakeOrderRepository.
-        // - Manually construct OrderProcessor passing the payment mock, inventory mock, and the fake repository.
-        // - Run a successful payment scenario.
-        // - Assert that the fake repository actually contains the saved order (no Mockito verification).
+        FakeOrderRepository fakeOrderRepository = new FakeOrderRepository();
+        OrderProcessor orderProcessorWithFakeRepository = new OrderProcessor(paymentGateway, inventoryService, fakeOrderRepository);
+        Order order = anOrder().with(anOrderItem()).build();
+
+        given(paymentGateway.charge(order)).willReturn(PaymentResult.SUCCESS);
+
+        boolean result = orderProcessorWithFakeRepository.process(order);
+
+        assertThat(result).isTrue();
+        assertThat(order.status()).isEqualByComparingTo(OrderStatus.COMPLETED);
+        assertThat(fakeOrderRepository.getSavedOrders()).contains(order);
     }
 }

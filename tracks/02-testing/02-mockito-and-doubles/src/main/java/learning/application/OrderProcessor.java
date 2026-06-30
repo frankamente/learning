@@ -1,9 +1,6 @@
 package learning.application;
 
-import learning.domain.Order;
-import learning.domain.PaymentGateway;
-import learning.domain.InventoryService;
-import learning.domain.OrderRepository;
+import learning.domain.*;
 
 public class OrderProcessor {
     private final PaymentGateway paymentGateway;
@@ -21,12 +18,20 @@ public class OrderProcessor {
     }
 
     public boolean process(Order order) {
-        // TODO: Implement according to business rules:
-        // 1. Reserve inventory.
-        // 2. Charge payment.
-        // 3. Handle outcomes:
-        //    - Payment success -> complete order, save to repo, return true.
-        //    - Payment failure -> release inventory, cancel order, save to repo, return false.
-        return false;
+        inventoryService.reserve(order);
+        PaymentResult charge = paymentGateway.charge(order);
+        return switch (charge) {
+            case SUCCESS -> {
+                order.complete();
+                orderRepository.save(order);
+                yield true;
+            }
+            case FAILURE -> {
+                inventoryService.release(order);
+                order.cancel();
+                orderRepository.save(order);
+                yield false;
+            }
+        };
     }
 }

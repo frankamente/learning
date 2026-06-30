@@ -107,6 +107,8 @@ Spring Boot, distributed systems, cloud, and operations matter, but they should 
   - Modern testing support.
   - RestTestClient, WebTestClient, and MockMvc.
   - `@MockitoBean`, `@MockitoSpyBean`, and test bean replacement.
+  - Instancio.
+  - ObjectMothers
   - Application context caching and test performance.
   - AOT support for tests.
   - REST client generation and interface-based HTTP clients.
