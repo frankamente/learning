@@ -65,10 +65,17 @@ public record Money(BigDecimal amount, String currency) {
   boolean isPositive = amount.compareTo(BigDecimal.ZERO) >= 0;
   ```
 
-### Testing Assertions (AssertJ)
-* Use `isEqualByComparingTo()` instead of `isEqualTo()` for asserting `BigDecimal` values:
+### Record Equals & BigDecimal Scale Trap
+* Because Java Records automatically generate `.equals()` by delegating to each field's `.equals()`, wrapping a `BigDecimal` inside a record (like `Money`) makes the record's equals method susceptible to the scale trap.
+* `new Money(new BigDecimal("5"), "USD").equals(new Money(new BigDecimal("5.0"), "USD"))` will return `false`.
+* **The Solution**: In the record's compact constructor, normalize the scale of the incoming `BigDecimal` so all instances share the same scale:
   ```java
-  assertThat(result.amount()).isEqualByComparingTo(BigDecimal.valueOf(6));
+  public record Money(BigDecimal amount, String currency) {
+      public Money {
+          // Normalize scale to 2 and round (or truncate) to avoid the equals() scale trap
+          amount = amount.setScale(2, java.math.RoundingMode.HALF_UP);
+      }
+  }
   ```
 
 ---
