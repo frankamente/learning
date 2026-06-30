@@ -60,17 +60,4 @@ class OrderProcessorTest {
         // - Assert that the fake repository actually contains the saved order (no Mockito verification).
     }
 
-    // Fake Repository class for learning taxonomy
-    static class FakeOrderRepository implements OrderRepository {
-        private final List<Order> savedOrders = new ArrayList<>();
-
-        @Override
-        public void save(Order order) {
-            savedOrders.add(order);
-        }
-
-        public List<Order> getSavedOrders() {
-            return savedOrders;
-        }
-    }
 }
