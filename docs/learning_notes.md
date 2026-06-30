@@ -157,4 +157,40 @@ public record Money(BigDecimal amount, String currency) {
   );
   ```
 
+---
+
+## 7. Concurrency & Virtual Threads (Java 25 Baseline)
+
+### Key Concept: Platform vs. Virtual Threads
+* **Platform Threads**: Managed by the OS, mapping 1:1 to OS threads. They are heavy, memory-intensive (~1MB stack), and expensive to context-switch.
+* **Virtual Threads**: Managed by the JVM, mapping M:N to a pool of platform "carrier" threads. They are lightweight (~hundreds of bytes stack) and can be created in millions.
+* **Unmounting**: When a virtual thread performs a blocking operation (like `Thread.sleep()` or blocking socket read), the JVM scheduler *unmounts* it from its carrier thread, leaving the carrier thread free to run other virtual threads.
+
+### JEP 491: Synchronized Unmounting (Java 24+)
+* In early virtual thread previews (Java 19-21), blocking inside a `synchronized` block or method would **pin** the virtual thread to its carrier thread, blocking the carrier thread as well. Developers had to refactor all `synchronized` blocks to `ReentrantLock` to avoid this.
+* **In Java 24+ (JEP 491)**, the JVM was updated to transition synchronized blocks to support unmounting. A virtual thread now successfully unmounts inside `synchronized` blocks when performing blocking operations:
+  ```java
+  // In Java 25, this NO LONGER pins the carrier thread during sleep!
+  synchronized (new Object()) {
+      Thread.sleep(100); 
+  }
+  ```
+
+### Key Concept: Lock Contention
+* While `ReentrantLock` allows unmounting, using a shared instance of a lock (like a class-level final field) across multiple concurrent tasks will **serialize** execution due to mutual exclusion:
+  ```java
+  private final ReentrantLock lock = new ReentrantLock();
+  
+  public void executeLockTask() {
+      lock.lock(); // Only one thread runs this at a time; others wait in series!
+      try {
+          Thread.sleep(100);
+      } finally {
+          lock.unlock();
+      }
+  }
+  ```
+* For concurrent operations that do not require mutual exclusion, do not lock on a shared instance.
+
+
 
