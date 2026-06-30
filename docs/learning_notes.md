@@ -287,8 +287,30 @@ Suppose a bank account has a balance of **$100**. Two clients concurrently try t
           orderRepository.save(order);
           yield false;
       }
-  };
   ```
+
+---
+
+## 12. Integration Testing and Testcontainers (PostgreSQL)
+
+### Unit vs. Integration Testing
+* **Unit Testing**: Focuses on a single class/method in isolation, mocking all external dependencies. Fast and cheap, but cannot verify database behavior, SQL queries, or integrations.
+* **Integration Testing**: Exercises the system with real external dependencies (databases, queue brokers, web services) to verify actual runtime interactions.
+
+### Testcontainers
+* Testcontainers is a Java library that allows launching real Docker containers (PostgreSQL, Kafka, Redis, etc.) programmatically during test execution.
+* Ensures **isolated, reproducible database states** for every developer and CI runner, preventing database pollution.
+
+### Best Practices for DB Integration Tests
+1. **Singleton Container Pattern**: Spawning a Docker container is resource-heavy (takes 3-8 seconds). To speed up testing, define the container as a `static` field in a base class or test class so it boots once per test execution rather than once per test class.
+2. **State Cleanliness (Truncation)**: Run `TRUNCATE TABLE tablename` in `@BeforeEach` to clean the database before each test. This ensures test isolation without restarting the container.
+3. **Dynamic Configuration**: Do not hardcode ports. Retrieve the dynamic JDBC URL, username, and password from the running container via `container.getJdbcUrl()`, `container.getUsername()`, etc.
+
+### JDBC Best Practices
+* **Use try-with-resources for `ResultSet`**: Like `PreparedStatement` and `Connection`, the `ResultSet` must be closed to prevent cursor leaks in PostgreSQL.
+* **Access columns by name**: Prefer `resultSet.getString("name")` over `resultSet.getString(2)`. Reading columns by name is resistant to column order shifts in SQL `SELECT` queries.
+* **executeUpdate vs executeQuery**: Use `executeUpdate()` for statements that mutate data (INSERT, UPDATE, DELETE) and `executeQuery()` only for reading data (SELECT).
+
 
 
 
