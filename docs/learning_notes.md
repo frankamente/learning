@@ -318,6 +318,46 @@ Suppose a bank account has a balance of **$100**. Two clients concurrently try t
 * **Access columns by name**: Prefer `resultSet.getString("name")` over `resultSet.getString(2)`. Reading columns by name is resistant to column order shifts in SQL `SELECT` queries.
 * **executeUpdate vs executeQuery**: Use `executeUpdate()` for statements that mutate data (INSERT, UPDATE, DELETE) and `executeQuery()` only for reading data (SELECT).
 
+---
+
+## 13. Spring Boot 4.x: Core Dependency Injection, Profiles, and Scopes
+
+### Spring Boot 4.x Baseline
+* **Java 21+ Required**: Spring Boot 4.x has a minimum baseline of Java 21. It fully integrates with our Java 25 workspace, exploiting JVM performance gains and virtual threads natively.
+
+### Constructor Injection
+* **Why it is Preferred**: 
+  * **Immutability**: Allows fields to be declared as `private final`, ensuring dependencies cannot change after bean instantiation.
+  * **No `@Autowired` Required**: Spring automatically injects dependencies via the constructor if it is the only constructor, keeping code framework-agnostic.
+  * **Testability**: Allows instantiating the class manually in unit tests with a simple `new Service(mockRepo, mockSender)` without starting the Spring container.
+  * **Circular Dependency Protection**: If two beans require each other at construction, Spring throws a `BeanCurrentlyInCreationException` at boot time, forcing clean decoupled designs.
+
+### Spring Profiles (`@Profile`)
+* **Key Concept**: Allows registering beans conditionally based on active environments (profiles).
+* **Usage**: Define `@Profile("email")` or `@Profile("sms")` on different implementations of a common interface. By activating the profile via `@ActiveProfiles("email")` or `spring.profiles.active=email`, Spring registers only the matching bean, preventing `NoUniqueBeanDefinitionException`.
+
+### Bean Scopes: Singleton vs. Prototype
+* **Singleton (Default)**: A single instance is created per Application Context and shared globally.
+* **Prototype**: A new instance is created every time the bean is requested.
+* **The Singleton Injection Trap**: If a Prototype bean is injected into a Singleton bean, the Prototype is injected only once during Singleton creation. It will subsequently act as a Singleton. To resolve this, use `ObjectProvider<T>` or method lookup (`@Lookup`).
+
+### Maven Surefire vs. Integration Tests (IT)
+* By default, Spring Boot integration tests ending in `IT.java` are bypassed by Surefire (which targets unit tests matching `*Test.java`).
+* **The Fix**: Configure Surefire explicitly to include both patterns to ensure context-booting integration tests execute automatically in the normal build lifecycle:
+  ```xml
+  <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <configuration>
+          <includes>
+              <include>**/*Test.java</include>
+              <include>**/*IT.java</include>
+          </includes>
+      </configuration>
+  </plugin>
+  ```
+
+
 
 
 
