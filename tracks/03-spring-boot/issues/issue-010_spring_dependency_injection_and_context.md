@@ -10,7 +10,7 @@ Implement a small Spring Boot application demonstrating Constructor Injection, B
 
 ### Project Setup
 Create project `01-dependency-injection` using Maven with:
-- Spring Boot Starter Parent (using version `3.4.1` or similar modern 3.x).
+- Spring Boot Starter Parent (using version `4.1.0` or similar modern 4.x).
 - Dependencies: `spring-boot-starter` (core Spring Boot), `spring-boot-starter-test`.
 - JUnit 6.0.3 and AssertJ 3.27.7 configurations matching our global standard.
 
