@@ -11,11 +11,7 @@ public class NotificationService {
     private final NotificationSender sender;
     private final RequestIdGenerator idGenerator;
 
-    public NotificationService(
-            MessageRepository repository,
-            NotificationSender sender,
-            RequestIdGenerator idGenerator
-    ) {
+    public NotificationService(MessageRepository repository, NotificationSender sender, RequestIdGenerator idGenerator) {
         this.repository = repository;
         this.sender = sender;
         this.idGenerator = idGenerator;

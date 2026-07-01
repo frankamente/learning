@@ -3,7 +3,7 @@ package learning.sender;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-// TODO: Annotate with @Profile("email")
+@Profile("email")
 @Component
 public class EmailNotificationSender implements NotificationSender {
     @Override

@@ -3,7 +3,7 @@ package learning.sender;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-// TODO: Annotate with @Profile("sms")
+@Profile("sms")
 @Component
 public class SmsNotificationSender implements NotificationSender {
     @Override
