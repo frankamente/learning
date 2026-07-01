@@ -104,7 +104,8 @@ Spring Boot, distributed systems, cloud, and operations matter, but they should 
     * Spring Security architecture, filter chain, and security context.
     * Identity Management (IAM) integrations: LDAP, Oracle Identity Manager (OIM), Oracle Access Manager (OAM).
     * Social Login & Federated Authentication (OAuth2, OIDC with Google, GitHub, etc.).
-    * Multi-login configurations (supporting form login, LDAP, and Social/OAuth2 login concurrently in a single Spring Boot application).
+    * Magic Link (Passwordless) authentication flow (one-time token generation, secure expiration, email validation, and exchange for session/JWT).
+    * Multi-login configurations (supporting form login, LDAP, Social/OAuth2, and Magic Links concurrently in a single Spring Boot application).
     * Modern IAM Servers: Keycloak and Auth0 integrations.
     * Stateless authentication (JWT) vs. Session-based stateful authentication.
   - Configuration and test slices.
@@ -207,3 +208,14 @@ Spring Boot, distributed systems, cloud, and operations matter, but they should 
   - Changelogs & Status tracking.
   - Portfolio narrative.
   - AI collaboration.
+
+### 11. Frontend and Mobile Integration (Full-Stack Flow)
+**Goal**: Connect backend APIs to frontend platforms (Web and Flutter Mobile) with robust security and a smooth user experience.
+* **Topics**:
+  - CORS (Cross-Origin Resource Sharing) configurations in Spring Security.
+  - Multi-platform authentication client flows (Web browser and Flutter Android application).
+  - Secure token storage on clients (Browser LocalStorage/Cookies vs. Android Keystore / iOS Keychain via Flutter Secure Storage).
+  - Authentication State Management in Flutter (bloc/provider routing based on auth state, automatic redirection).
+  - Session expiration and refresh token rotation handled gracefully in Flutter.
+  - Magic Link flow integration: client-side deep-linking/app-linking to capture unique URL tokens and backend exchange.
+
