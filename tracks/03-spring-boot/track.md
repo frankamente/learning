@@ -24,4 +24,4 @@ Learn Spring Boot as a professional backend platform, understanding its core mac
   - Filter chain, security contexts, form + LDAP concurrent login, Social login OAuth2/OIDC, and Keycloak integrations.
 
 ## Active Issues
-- [ ] **Issue 010**: Spring Dependency Injection and Application Context. See [issue-010_spring_dependency_injection_and_context.md](issues/issue-010_spring_dependency_injection_and_context.md)
+- [x] **Issue 010**: Spring Dependency Injection and Application Context. See [issue-010_spring_dependency_injection_and_context.md](issues/issue-010_spring_dependency_injection_and_context.md)
